@@ -11,16 +11,17 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
+    //We need to store the randomized dates
     var dateArray : [NSDate] = [NSDate]()
 
+    //Create a structure to group the dates by day
     var groupedDates = [Double](count: 60, repeatedValue: 0.0)
 
     var window: UIWindow?
 
-
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
-        
+        //Lets create the 100 random dates
         for var i = 0 ; i<100; i++
         {
             dateArray.append(generateRandomDateWithinDaysBeforeToday(60))
@@ -34,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             return false
         }
-        
+        //Start at day 0, even if we have no dates there
         var currentDay = 0
         
         let unitFlags: NSCalendarUnit = [.Month,.Day]
@@ -42,16 +43,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let gregorian = NSCalendar.init(identifier: NSCalendarIdentifierGregorian)
 
         let offsetComponents = NSDateComponents()
-        offsetComponents.day = -59
         
+        //Understanding "Last 60 days" as being inclusive- thus as much as 59 days ago plus today
+        offsetComponents.day = -59
+        //Start at the earliest date, 59 days from today
         var currentDate = (gregorian?.dateByAddingComponents(offsetComponents, toDate: NSDate(), options: []))!
         
         var currentDateComponents = NSCalendar.currentCalendar().components(unitFlags, fromDate: currentDate)
         
         for var i = 0 ; i<100; i++
         {
+            //next comp is the next item we will look at
             let nextComp = NSCalendar.currentCalendar().components(unitFlags, fromDate: dateArray[i]);
-            
+            //If the current day is not the next one, advance one in our groupedDate array. This lets us have values of 0 if there were no dates matching a particular day
             while nextComp.day != currentDateComponents.day
             {
                 offsetComponents.day=1
@@ -61,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 
                 currentDay++
             }
-            
+            //For the particular day that matches, add one to the count
             groupedDates[currentDay] = groupedDates[currentDay]+1
             
             
